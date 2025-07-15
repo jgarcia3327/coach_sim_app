@@ -22,6 +22,14 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
+    public function createTrainee(): View
+    {
+        $trainers = User::where('is_active')->where('type', 2)->get();
+        return view('auth.register-trainee',[
+            'trainers' => $trainers
+        ]);
+    }
+
     /**
      * Handle an incoming registration request.
      *
@@ -35,7 +43,10 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $type = empty($request->trainee)? 2 : 3;
+
         $user = User::create([
+            'type' => $type,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
